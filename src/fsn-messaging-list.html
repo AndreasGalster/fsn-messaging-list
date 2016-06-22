@@ -1,0 +1,246 @@
+<dom-module id="fsn-messaging-list">
+  <template>
+  <style include="houseme-styles"></style>
+  <style>
+  :host {
+    display: block;
+    height: calc(100vh - 64px);
+    overflow-y: scroll;
+    cursor: pointer;
+  }
+
+  img {
+    left:10px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+
+  paper-icon-item {
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+    /*border-bottom: 1px solid rgba(0,0,0,0.3);*/
+
+    padding: 20px 10px;
+    background: rgba(0,0,0,0.05);
+  }
+
+  </style>
+
+    <template is='dom-if' if=[[messagesAvailable(messages)]]>
+
+      <!-- <iron-scroll-threshold on-lower-threshold="loadMoreMessages" id="threshold"> -->
+        <template is='dom-repeat' items=[[messages]]>
+        <!-- <iron-list items=[[mwcData.messages]]> -->
+          <!-- <template> -->
+            <paper-icon-item on-tap='getMessageId'>
+              <img class="avatar" item-icon src="http://graph.facebook.com/[[item.profileImage]]/picture?type=square">
+              <!-- <div class="avatar" item-icon></div> -->
+              <paper-item-body two-line>
+                <div>[[item.profileName]]</div>
+                <!-- [[item.time]] -->
+                <div secondary>[[item.lastMessage]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+          </template>
+          <!-- </template> -->
+        <!-- </iron-list> -->
+      <!-- </iron-scroll-threshold> -->
+
+      <paper-button full-width on-transitionend='loadMoreMessages'>Load more conversations</paper-button>
+
+
+    </template>
+
+    <template is='dom-if' if=[[!messagesAvailable(messages)]]>
+
+      <h1>You don't have any messages yet. Why don't you check out some profiles to send your first message?</h1>
+
+    </template>
+
+
+  </template>
+</dom-module>
+
+
+<script>
+  require('@polymer/polymer/polymer.html');
+  require('@polymer/iron-list/iron-list.html');
+  require('@polymer/iron-scroll-threshold/iron-scroll-threshold.html');
+  require('@polymer/paper-button/paper-button.html');
+  require('@polymer/paper-item/paper-item.html');
+  require('@polymer/paper-item/paper-icon-item.html');
+
+  require('moment');
+
+  require('@andreasgalster/fsn-boilerplate/fsn-boilerplate.html');
+
+
+  Polymer({
+    is: 'fsn-messaging-list',
+    behaviors:[mwcMixin],
+    properties: {
+      limiter: {
+        type: Number,
+        value: 8,
+        observer: 'tracker'
+      },
+      messageId: {
+        type: String,
+        notify: true,
+        observer: '_subscribeMessage'
+      },
+    },
+    attached: function() {
+      this.subscribe("messagesTeaser");
+      this.subscribe("usersTeaser");
+    },
+    _subscribeMessage: function() {
+      // this.subscribe("messagesDetail", this.messageId);
+    },
+    getMessageId: function(e) {
+      console.log(e.model.item.userid);
+      this.messageId = e.model.item.userid;
+    },
+    getMeteorData: function() {
+      // console.log(`we're getting the limits. they are ${this.limiter}`);
+      return {messages :  Meteor.users.find({}, {limit: this.limiter}).fetch()}; //runs every time status changes.
+    },
+    tracker: function() {
+      this.messages = Messages.find({}, {limit: this.limiter}).fetch(); //runs every time status changes.
+
+      // initialize array to push message details
+      var results = [];
+
+
+      // look for every message that's shared with this user
+      for (i = 0; i < Messages.find({ userids: Meteor.userId() }).fetch().length; i++) {
+
+        // get the message document and store the messages in an array
+        var message = Messages.findOne({ userids: Meteor.userId() }, { skip: i });
+        var messages = message.messages;
+
+        // get the last message in the array
+        var lastMessage = messages[messages.length-1].content;
+
+
+
+        // grab the message time and format it,
+        var time = message.time;
+        var timeTemp = time.replace("at ", "");
+
+        // compare it to the current time,
+        var biggerDate = moment().format('ddd D HH:mm');
+        var smallerDate = moment(timeTemp, 'ddd D HH:mm');
+
+        // return when the message was sent
+        var day = moment(smallerDate, 'ddd D HH:mm').calendar( moment(biggerDate, 'ddd D HH:mm') );
+        time = day;
+
+
+
+        // var messagesRead = message.messageread;
+        //
+        // function readstatus(element, index, array) {
+        //   if ( array[index].userid == Meteor.userId() )  {
+        //     messagesRead = array[index].messageread;
+        //   } else {
+        //     console.log('this shit is false');
+        //   }
+        // }
+        // messagesRead.forEach(readstatus);
+        // if ( messagesRead == false ) {
+        //   messagesRead = 'highlighted';
+        // }
+
+
+
+
+        // get array of the users that send message
+        // get index of own userid and remove from array
+        // console.log(message);
+        var users = message.userids;
+        var ownUser = users.indexOf( Meteor.userId() );
+        var otherUser = users.splice(ownUser, 1);
+
+        // console.log(Meteor.userId());
+        // console.log(message);
+        // console.log(users);
+        // console.log(ownUser);
+        // console.log(otherUser);
+        //
+        // console.log(users[0]);
+
+        var userid = users[0];
+        // userArraySpliced = userArraySpliced[0];
+        // userid = userArray[0];
+        var profileName = Meteor.users.findOne({_id: userid}).services.facebook.first_name;
+        var profileImage = Meteor.users.findOne({_id: userid}).services.facebook.id;
+
+
+
+
+
+        //
+        // // get array of the users that send message
+        // // get index of own userid and remove from array
+        // var userIndex = message.userids.indexOf( Meteor.userId() );
+        // var userId = message.userids.splice(userIndex, 1);
+        // userId = userId[0]
+        // console.log(Meteor.userId());
+        // console.log(userId);
+        //
+        // var profileName = Meteor.users.findOne({_id: userid}).services.facebook.first_name;
+        // var profileImage = Meteor.users.findOne({_id: userid}).services.facebook.id;
+
+
+
+
+
+
+
+
+
+        results.push(
+          {
+            userid: userid,
+            time: time,
+            profileName: profileName,
+            profileImage: profileImage,
+            lastMessage: lastMessage,
+            // messageRead: messagesRead
+          }
+        );
+
+        console.log(results);
+
+      }
+
+      this.messages = results;
+    },
+    messagesAvailable: function(messages){
+      // console.log(messages.length > 0);
+      if(messages.length > 0) {
+        return true;
+      }
+    },
+    loadMoreMessages: function() {
+      // console.log(`we're loading more limits. they are ${this.limiter}`);
+      this.limiter = this.limiter + 8;
+      // ironScrollTheshold.clearTriggers();
+    }
+
+
+    //
+    // 'click li': function (event) {
+    //
+    //     // console.log(this.id);
+    //     var userid = {};
+    //     userid['userid'] = this.id;
+    //     Session.set('userid',userid);
+    //
+    //
+    // },
+
+  });
+
+</script>
