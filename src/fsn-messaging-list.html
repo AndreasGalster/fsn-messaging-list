@@ -30,7 +30,7 @@
 
   </style>
 
-  <template is='dom-if' if=[[userIsSelected(toUserId)]]>
+  <!-- <template is='dom-if' if=[[userIsSelected(toUserId)]]>
     <paper-listbox>
       <paper-icon-item on-tap='removeMessageId' focused>
         <img class='avatar' item-icon src='http://graph.facebook.com/[[getUserImage(toUserId)]]/picture?type=square'>
@@ -39,7 +39,7 @@
         </paper-item-body>
       </paper-icon-item>
     </paper-listbox>
-  </template>
+  </template> -->
 
   <template is="dom-if" if=[[subsReady]]>
     <template is='dom-if' if=[[messagesAvailable(messages)]]>
@@ -107,7 +107,7 @@
     attached: function() {
       // subscribes to users
       // retrieves facebook id and first_name
-      // this.subscribe('PrivateMessagesUsers');
+      this.subscribe('PrivateMessagesUsers');
 
       // subscribes to the list of message ids
       // does not contain facebook id or first_name
@@ -149,12 +149,6 @@
         return Meteor.users.findOne({ _id: toUserId}).services.facebook.id;
       // }
     },
-    // removes messageId to start a new conversation
-    // applies only when toUserId is set from the search
-    removeMessageId: function(e) {
-      this.messageId = undefined;
-      console.log(this.messageId);
-    },
     // retrieves the messageId. the ID gets fetched to the chat
     getMessageId: function(e) {
       if(e.type === 'dom-change') {
@@ -164,16 +158,12 @@
         }
         const firstItem = this.$$('paper-icon-item');
         this.messageId = e.target.modelForElement(firstItem).item.messageId;
-      } else if(e.type === 'tap') {
-        this.messageId = e.model.item.messageId;
-        this.selected = true;
       }
     },
     tracker: function() {
       this.messages = PrivateMessagesList.find().fetch(); //runs every time status changes.
     },
     messagesAvailable: function(messages){
-      // console.log(messages.length > 0);
       if(messages.length > 0) {
         return true;
       }
