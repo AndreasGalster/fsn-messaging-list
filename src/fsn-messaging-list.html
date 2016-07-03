@@ -104,7 +104,7 @@
         notify: true
       }
     },
-    attached: function() {
+    created: function() {
       // subscribes to users
       // retrieves facebook id and first_name
       this.subscribe('PrivateMessagesUsers');
@@ -128,14 +128,13 @@
       // console.log(Meteor.users.findOne({ _id: toUserId}).services.facebook.first_name);
       console.log(Meteor.users);
       // if(Meteor.users) {
-        return Meteor.users.findOne({ _id: toUserId}).services.facebook.first_name;
+        var user = Meteor.users.findOne({ _id: toUserId});
+        return user.services.facebook.first_name;
       // }
 
       // this.autorun( () => {
         // return Meteor.users.findOne({ _id: toUserId}).services.facebook.first_name
       // });
-
-
     },
     getUserImage: function(toUserId) {
       console.log( `subsready is ${this._subsReady()}` );
@@ -146,7 +145,8 @@
       //   return Meteor.users.findOne({ _id: toUserId}).services.facebook.id;
       // }
       // if(Meteor.users) {
-        return Meteor.users.findOne({ _id: toUserId}).services.facebook.id;
+        var user = Meteor.users.findOne({ _id: toUserId});
+        return user.services.facebook.id;
       // }
     },
     // retrieves the messageId. the ID gets fetched to the chat
