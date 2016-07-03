@@ -1,6 +1,6 @@
 {
   "name": "@andreasgalster/fsn-messaging-list",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "fsn-messaging-list is a set of basic shared styles, similar to bootstrap",
   "main": "fsn-messaging-list.html",
   "scripts": {
