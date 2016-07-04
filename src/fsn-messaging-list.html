@@ -181,23 +181,34 @@
         // main();
 
 
-        const callWithPromise = (method, myParameters) => {
-          return new Promise((resolve, reject) => {
-            Meteor.call(method, myParameters, (err, res) => {
-              if (err) reject('Something went wrong');
-              resolve(res);
-            });
-          });
-        }
 
-        async function doStuff() {
-          const myValue1 = await callWithPromise('getUserName', toUserId);
-          console.log(myValue1);
-        }
 
-        doStuff();
 
-        console.log( doStuff() );
+
+        //
+        // const callWithPromise = (method, myParameters) => {
+        //   return new Promise((resolve, reject) => {
+        //     Meteor.call(method, myParameters, (err, res) => {
+        //       if (err) reject('Something went wrong');
+        //       resolve(res);
+        //     });
+        //   });
+        // }
+        //
+        // async function doStuff() {
+        //   const myValue1 = await callWithPromise('getUserName', toUserId);
+        //   console.log(myValue1);
+        // }
+        //
+        // doStuff();
+        //
+        // console.log( doStuff() );
+        //
+
+
+
+
+
 
 
         // (async function() {

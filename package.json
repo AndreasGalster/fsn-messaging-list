@@ -29,6 +29,7 @@
     "@polymer/iron-component-page": "^0.0.3",
     "babel-cli": "^6.10.1",
     "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2017": "^1.4.0",
     "event-stream": "^3.3.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
