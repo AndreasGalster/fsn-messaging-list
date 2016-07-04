@@ -279,10 +279,11 @@
         if(!this.selected) {
           this.$$('paper-listbox').selected = 0;
           this.selected = true;
+          const firstItem = this.$$('paper-icon-item');
+          this.messageId = e.target.modelForElement(firstItem).item.messageId;
+          this.toUserId = e.target.modelForElement(firstItem).item.toUserId;
         }
-        const firstItem = this.$$('paper-icon-item');
-        this.messageId = e.target.modelForElement(firstItem).item.messageId;
-        this.toUserId = e.target.modelForElement(firstItem).item.toUserId;
+        // this.selectedIndex = this.$$('paper-listbox').selected
 
       } else if(e.type === 'tap') {
        this.messageId = e.model.item.messageId;
