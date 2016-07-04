@@ -5,7 +5,6 @@ var $ = require('gulp-load-plugins')();
 
 gulp.task('default', function() {
   return gulp.src(['src/*.html'])
-  // return gulp.src(['src/*.{js,html}'])
   //  .pipe($.sourcemaps.init())
    .pipe($.if('*.html', $.crisper({
      scriptInHead: false,
@@ -14,20 +13,8 @@ gulp.task('default', function() {
    .pipe($.if('*.js', $.babel({
      presets: ['es2015']
    })))
-   .pipe($.if('*.js', strip())
+  //  .pipe($.if('*.js', $.strip()))
 
-  //  .pipe($.deleteLines({
-  //    'filters': [
-  //      /<html>/i
-  //    ]
-  //  }))
   //  .pipe($.sourcemaps.write('.'))
-  // .pipe($.if('*.html', $.inlineSource({attribute: ''})))
-
-  //  .pipe($.if('*.html', $.inline({
-  //    base: 'dist',
-  //    js: $.uglify,
-  //    disabledTypes: ['svg', 'img', 'css']
-  //  })))
    .pipe(gulp.dest('dist'))
 });
