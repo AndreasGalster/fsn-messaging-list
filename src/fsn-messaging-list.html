@@ -42,24 +42,36 @@
   </template> -->
 
   <template is="dom-if" if=[[subsReady]]>
-    <template is='dom-if' if=[[messagesAvailable(messages)]]>
-        <paper-listbox>
+    <paper-listbox>
+
+      <template is='dom-if' if=[[userSelected]]>
+        <paper-icon-item on-tap='removeMessageId' focused>
+          <img class='avatar' item-icon src='http://graph.facebook.com/[[getUserImage(toUserId)]]/picture?type=square'>
+          <paper-item-body>
+            <div>[[getUserName(toUserId)]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+
+      <template is='dom-if' if=[[!userSelected]]>
+        <!-- <template is='dom-if' if=[[messagesAvailable(messages)]]> -->
           <template is='dom-repeat' items=[[messages]] on-dom-change='getMessageId'>
-              <paper-icon-item on-tap='getMessageId'>
-                <img item-icon src='https://graph.facebook.com/[[item.toFacebookId]]/picture?type=square'>
-                <!-- <img item-icon src='https://graph.facebook.com/[[getUserImage(item.toUserId)]]/picture?type=square'> -->
-                <!-- <h5>[[item.messageId]]</h5> -->
-                <!-- <div>[[item.toUserId]]</div> -->
-                <!-- <div>[[item.messageId]]</div> -->
-                <paper-item-body two-line>
-                  <!-- <div>[[getUserName(item.toUserId)]]yolo</div>                   -->
-                  <div>[[item.toFacebookName]]</div>
-                </paper-item-body>
-              </paper-icon-item>
-            </template>
-          </paper-listbox>
-      <!-- <paper-button full-width on-transitionend='loadMoreMessages'>Load more conversations</paper-button> -->
-    </template>
+            <paper-icon-item on-tap='getMessageId'>
+              <img item-icon src='https://graph.facebook.com/[[item.toFacebookId]]/picture?type=square'>
+              <!-- <img item-icon src='https://graph.facebook.com/[[getUserImage(item.toUserId)]]/picture?type=square'> -->
+              <!-- <h5>[[item.messageId]]</h5> -->
+              <!-- <div>[[item.toUserId]]</div> -->
+              <!-- <div>[[item.messageId]]</div> -->
+              <paper-item-body two-line>
+                <!-- <div>[[getUserName(item.toUserId)]]yolo</div>                   -->
+                <div>[[item.toFacebookName]]</div>
+              </paper-item-body>
+            </paper-icon-item>
+          </template>
+        <!-- </template> -->
+      </template>
+
+    </paper-listbox>
   </template>
 
     <template is='dom-if' if=[[!messagesAvailable(messages)]]>
