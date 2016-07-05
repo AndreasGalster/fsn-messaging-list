@@ -54,7 +54,7 @@
       </template>
 
       <template is='dom-if' if=[[!userSelected]]>
-        <!-- <template is='dom-if' if=[[messagesAvailable(messages)]]> -->
+        <template is='dom-if' if=[[messagesAvailable(messages)]]>
           <template is='dom-repeat' items=[[messages]] on-dom-change='getMessageId'>
             <paper-icon-item on-tap='getMessageId'>
               <img item-icon src='https://graph.facebook.com/[[item.toFacebookId]]/picture?type=square'>
@@ -68,7 +68,7 @@
               </paper-item-body>
             </paper-icon-item>
           </template>
-        <!-- </template> -->
+        </template>
       </template>
 
     </paper-listbox>
