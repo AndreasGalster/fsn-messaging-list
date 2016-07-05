@@ -116,7 +116,8 @@
         type: String,
         value: '',
         notify: true
-      }
+      },
+      userSelected: Boolean
     },
     attached: function() {
       // subscribes to users
@@ -126,15 +127,6 @@
       // subscribes to the list of message ids
       // does not contain facebook id or first_name
       this.subscribe('PrivateMessagesList');
-    },
-
-    // Shows or hides the currently selected user from the search
-    userIsSelected: function(toUserId) {
-      if(toUserId) {
-        return true;
-      }else {
-        return false;
-      }
     },
 
     getUserName: function(toUserId) {
