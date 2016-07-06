@@ -7,6 +7,7 @@
     height: calc(100vh - 64px);
     overflow-y: scroll;
     cursor: pointer;
+    background: rgba(0,0,0,0.05);
   }
 
   img {
@@ -28,51 +29,48 @@
     padding: 0;
   }
 
+  #highlight fb-user-name {
+    /*--text-color: white;*/
+  }
+
+  #highlight {
+    /*background: var(--blue);*/
+    background: #9dd5ff;
+  }
+
+  paper-icon-item[focused], paper-icon-item.selected {
+    background: #d0ebff;
+  }
+
+
   </style>
 
-  <!-- <template is='dom-if' if=[[userIsSelected(toUserId)]]>
-    <paper-listbox>
-      <paper-icon-item on-tap='removeMessageId' focused>
-        <img class='avatar' item-icon src='http://graph.facebook.com/[[getUserImage(toUserId)]]/picture?type=square'>
-        <paper-item-body>
-          <div>[[getUserName(toUserId)]]</div>
-        </paper-item-body>
-      </paper-icon-item>
-    </paper-listbox>
-  </template> -->
-
-  <template is="dom-if" if=[[subsReady]]>
     <paper-listbox>
 
       <template is='dom-if' if=[[userSelected]]>
-        <paper-icon-item on-tap='removeMessageId' focused>
-          <img class='avatar' item-icon src='http://graph.facebook.com/[[getUserImage(toUserId)]]/picture?type=square'>
+        <!-- <paper-icon-item hidden$=[[!userSelected]] id='highlight' on-tap='removeMessageId'> -->
+        <paper-icon-item id='highlight' on-tap='removeMessageId'>
+          <fb-user-image item-icon to-user-id=[[toUserId]]></fb-user-image>
           <paper-item-body>
-            <div>[[getUserName(toUserId)]]</div>
+            <fb-user-name to-user-id=[[toUserId]]></fb-user-name>
           </paper-item-body>
         </paper-icon-item>
       </template>
 
-      <template is='dom-if' if=[[!userSelected]]>
+      <!-- <template is='dom-if' if=[[!userSelected]]> -->
         <template is='dom-if' if=[[messagesAvailable(messages)]]>
-          <template is='dom-repeat' items=[[messages]] on-dom-change='getMessageId'>
+          <template id='messagelist' is='dom-repeat' items=[[messages]] on-dom-change='getMessageId'>
             <paper-icon-item on-tap='getMessageId'>
-              <img item-icon src='https://graph.facebook.com/[[item.toFacebookId]]/picture?type=square'>
-              <!-- <img item-icon src='https://graph.facebook.com/[[getUserImage(item.toUserId)]]/picture?type=square'> -->
-              <!-- <h5>[[item.messageId]]</h5> -->
-              <!-- <div>[[item.toUserId]]</div> -->
-              <!-- <div>[[item.messageId]]</div> -->
+              <fb-user-image item-icon to-user-id=[[item.toUserId]]></fb-user-image>
               <paper-item-body two-line>
-                <!-- <div>[[getUserName(item.toUserId)]]yolo</div>                   -->
-                <div>[[item.toFacebookName]]</div>
+                <fb-user-name to-user-id=[[item.toUserId]]></fb-user-name>
               </paper-item-body>
             </paper-icon-item>
           </template>
         </template>
-      </template>
+      <!-- </template> -->
 
     </paper-listbox>
-  </template>
 
     <template is='dom-if' if=[[!messagesAvailable(messages)]]>
       <h1>You don't have any messages yet. Why don't you check out some profiles to send your first message?</h1>
@@ -93,6 +91,10 @@
   require('@polymer/paper-listbox/paper-listbox.html');
   require('@polymer/paper-item/paper-item.html');
   require('@polymer/paper-item/paper-icon-item.html');
+
+  require('../../fb-user-image.html');
+  require('../../fb-user-name.html');
+
 
   require('moment');
 
@@ -117,7 +119,18 @@
         value: '',
         notify: true
       },
-      userSelected: Boolean
+      userSelected: {
+        type: Boolean,
+        value: false
+      }
+    },
+    // listeners: {
+    //   'user-selected-false': 'resetUserSelected'
+    // },
+    resetUserSelected: function() {
+      this.fire('user-selected-false');
+      // userSelected = false;
+      // this.userSelected = false;
     },
     attached: function() {
       // subscribes to users
@@ -128,204 +141,25 @@
       // does not contain facebook id or first_name
       this.subscribe('PrivateMessagesList');
     },
-
-    getUserName: function(toUserId) {
-      // console.log( `subsready is ${this._subsReady()}` );
-      // console.log(Meteor.users.findOne({ _id: toUserId}).services.facebook.first_name);
-      // console.log(Meteor.users);
-      // if(Meteor.users) {
-        // this.subscribe('PrivateMessagesUser', toUserId);
-
-
-        // Meteor.call('getUserName', toUserId, (err,res) => Session.set('res',res));
-        // return Session.get('res');
-        // this.async(this.updateClock, null, 1000);
-
-        // Meteor.call('getUserName', toUserId).then(console.log('bla'));
-          // (err,res) => console.log(res);
-
-
-
-        // function getImage() {
-        //   var res;
-        //
-        //   return new Promise(function(resolve, reject) {
-        //     Meteor.call('getUserName', toUserId, function(err,res) {
-        //       resolve(res);
-        //     });
-        //   });
-        // }
-
-        // async function main() {
-        //   var res = await getImage();
-        //   console.log(res);
-        // }
-
-        // main();
-
-
-        // function callMeteorMethod(methodName, toUserId) {
-        //     let resolve, reject
-        //     const promise = new Promise((a, b) => { resolve = a; reject = b })
-        //
-        //     Meteor.call(methodName, toUserId, (error, result) => {
-        //         if (error) reject(error)
-        //         else resolve(result)
-        //     })
-        //
-        //     return promise
-        // }
-        //
-        //
-        // async function main() {
-        //     let result = await callMeteorMethod('getUsername', toUserId)
-        //     console.log(result)
-        // }
-        //
-        // main();
-
-
-
-
-
-
-        //
-        // const callWithPromise = (method, myParameters) => {
-        //   return new Promise((resolve, reject) => {
-        //     Meteor.call(method, myParameters, (err, res) => {
-        //       if (err) reject('Something went wrong');
-        //       resolve(res);
-        //     });
-        //   });
-        // }
-        //
-        // async function doStuff() {
-        //   const myValue1 = await callWithPromise('getUserName', toUserId);
-        //   console.log(myValue1);
-        // }
-        //
-        // doStuff();
-        //
-        // console.log( doStuff() );
-        //
-
-
-
-
-
-
-
-        // (async function() {
-        //     var result  = await Meteor.callPromise('getUserName', toUserId);
-        //
-        //     console.log(result);
-        //     // Do stuff
-        // }());
-
-        // console.log( Meteor.callPromise('getUserName', toUserId) );
-
-        // var res
-        // var promise = Meteor.callPromise('getUserName', toUserId).then(function(res) {
-        //   console.log(res);
-        //   // return res;
-        //   res = res;
-        // });
-
-        // var res
-        // return 'bla';
-        // var promise = Meteor.callPromise('getUserName', toUserId);
-        // console.log(promise);
-        // // return promise.then(function (res) {
-        //       console.log(res);
-        //       return res;
-        // });
-        // console.log( promise.then(function (res) {
-        //   return res;
-        // }));
-
-        // function setName(res) {
-        //   console.log(res);
-        //   return res;
-        // }
-        //
-        // promise.then( (res) => {
-        //   console.log(this);
-        //   setName(res);
-        //   return res;
-        // });
-
-
-        // console.log(`result is ${result}`);
-
-
-
-
-        //
-        // (async function bla() {
-        //     var result  = await Meteor.callPromise('getUserName', toUserId);
-        //     console.log(result);
-        //     // Do stuff
-        // }());
-
-        // (async () => {
-        //     var result  = await Meteor.callPromise('getUserName', toUserId);
-        //     console.log(result);
-        //     // Do stuff
-        // }());
-
-
-
-        // return Meteor.call('getUserName', toUserId, (err,res) => res);
-        // return res;
-
-        // var user = Meteor.users.findOne({ _id: toUserId});
-        // return user.services.facebook.first_name;
-      // }
-
-      // this.autorun( () => {
-        // return Meteor.users.findOne({ _id: toUserId}).services.facebook.first_name
-      // });
-    },
-      getUserImage: function(toUserId) {
-        // console.log( `subsready is ${this._subsReady()}` );
-        // console.log(Meteor.users.find().fetch());
-        // console.log(toUserId);
-        // console.log(Meteor.users.findOne({ _id: toUserId}).services.facebook.id);
-        // if(this._subsReady()) {
-        //   return Meteor.users.findOne({ _id: toUserId}).services.facebook.id;
-        // }
-        // if(Meteor.users) {
-          // var id;
-          // this.facebookId
-          // return Meteor.call('getUserImage', toUserId, (err,res) => res);
-          // Meteor.call('getUserImage', toUserId, (err,res) => console.log(res));
-          // return res;
-          // console.log(Meteor.call('getUserImage', toUserId, (err,res) => res));
-          // console.log(res);
-          // console.log(id);
-          // var user = Meteor.users.findOne({ _id: toUserId});
-          // return user.services.facebook.id;
-        // }
-      },
     // retrieves the messageId. the ID gets fetched to the chat
     getMessageId: function(e) {
+      // this.resetUserSelected();
       if(e.type === 'dom-change') {
-        if(!this.selected) {
-          this.$$('paper-listbox').selected = 0;
-          this.selected = true;
-          const firstItem = this.$$('paper-icon-item');
-          this.messageId = e.target.modelForElement(firstItem).item.messageId;
-          this.toUserId = e.target.modelForElement(firstItem).item.toUserId;
-        }
-        // this.selectedIndex = this.$$('paper-listbox').selected
+        this.$$('paper-listbox').selected = 1;
+        const firstItem = this.$$('paper-icon-item');
 
+        this.messageId = e.target.modelForElement(firstItem).item.messageId;
+        this.toUserId = e.target.modelForElement(firstItem).item.toUserId;
       } else if(e.type === 'tap') {
        this.messageId = e.model.item.messageId;
+       this.toUserId = e.model.item.toUserId;
+
        this.selected = true;
+       this.resetUserSelected();
       }
     },
     tracker: function() {
-      this.messages = PrivateMessagesList.find().fetch(); //runs every time status changes.
+      this.messages = PrivateMessagesList.find({}, {sort: {'status.createdAt': -1} }).fetch(); //runs every time status changes.
     },
     messagesAvailable: function(messages){
       if(messages.length > 0) {
